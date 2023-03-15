@@ -127,6 +127,10 @@ void MainWindow::fpsTimerOut()
                         okFrameCnt++;
                         // DUMP协议
                         // UINT16求和校验
+                        // 补丁：用来判定连续短包
+                        // 默认结束包
+                        static int lastDumpPkgType = 2;
+
                         uint16_t sum = 0;
                         int sumCheckNum = valTemp->size() - 1;
                         for (int jj = 0; jj < sumCheckNum; jj++)
@@ -139,7 +143,7 @@ void MainWindow::fpsTimerOut()
                         if (memcmp(buffer, &sum, 2) != 0)
                         {
                             uint16_t* gTmpU16 = (uint16_t*)(void*)buffer;
-                            printf("protocol DUMP sum check err:rev sum=%d;calc sum=%d @ pkg: %d\n", *gTmpU16, sum, okFrameCnt);
+                            printf("protocol DUMP sum check err:rev sum=%d;calc sum=%d @ pkg: %d\nplottings may have err data\n", *gTmpU16, sum, okFrameCnt);
                             errFrameCnt++;
                         }
                         float dumpPkgLastFloat = valTemp->takeLast();
@@ -153,6 +157,7 @@ void MainWindow::fpsTimerOut()
 
                             // 使用该数组
                             dumpBuff->swap(*valTemp);
+                            lastDumpPkgType = 0;
                         }
                         else if (dumpPkgLastFloat > 1.5f)
                         {
@@ -161,9 +166,17 @@ void MainWindow::fpsTimerOut()
                             // {
                             //     printf("%f\n", tmp);
                             // }
-
-                            // append即可
-                            dumpBuff->append(*valTemp);
+                            if (lastDumpPkgType != 2)
+                            {
+                                // append即可
+                                dumpBuff->append(*valTemp);
+                            }
+                            else
+                            {
+                                // 使用该数组
+                                dumpBuff->swap(*valTemp);
+                            }
+                            lastDumpPkgType = 2;
                         }
                         else
                         {
@@ -175,6 +188,7 @@ void MainWindow::fpsTimerOut()
 
                             // append即可
                             dumpBuff->append(*valTemp);
+                            lastDumpPkgType = 1;
                         }
                     }
                     else if (memcmp(&buffer[2], &end_array4[2], 2) == 0)

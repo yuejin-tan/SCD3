@@ -4,7 +4,7 @@
 #include <QtWidgets/QColorDialog>
 #include <QtWidgets/QListView>
 
-graphSet::graphSet(QWidget* parent) :
+graphSet::graphSet(QWidget* parent):
     QWidget(parent),
     ui(new Ui::graphSet)
 {
@@ -70,4 +70,5 @@ void graphSet::showWindowWithSetting()
     this->ui->doubleSpinBox_ymax->setValue(this->mGraphSetStruct.mYmax);
     this->show();
     this->raise();
+    this->showNormal();
 }

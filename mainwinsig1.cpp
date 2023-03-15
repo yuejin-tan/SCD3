@@ -138,10 +138,14 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
 void MainWindow::on_fcnButton1_clicked()
 {
     scopeForm1->show();
+    scopeForm1->raise();
+    scopeForm1->showNormal();
     emit startToDrawSig(1);
 }
 
 void MainWindow::on_inButton_clicked()
 {
     inForm1->show();
+    inForm1->raise();
+    inForm1->showNormal();
 }

@@ -218,4 +218,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
 void MainWindow::on_luaButton_clicked()
 {
     luaForm1->show();
+    luaForm1->raise();
+    luaForm1->showNormal();
 }
