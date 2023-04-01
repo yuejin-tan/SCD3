@@ -62,7 +62,7 @@ ui(new Ui::MainWindow)
 
     // 连接串口出错的信号
     connect(tyj_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
-    // 50ms的串口处理的定时器
+    // 串口处理兼主中断的定时器
     connect(timer1, &QTimer::timeout, this, &MainWindow::fpsTimerOut);
     // 串口定时发送的定时器
     connect(timer2, &QTimer::timeout, this, &MainWindow::sendTimerOut);
@@ -73,8 +73,8 @@ ui(new Ui::MainWindow)
     // 更新表格信号
     connect(this, &MainWindow::tableRefreshSig, this, &MainWindow::tableRefreshSlot);
 
-    // 使能串口数据处理函数，20Hz运行
-    mainMilliSec = 50;
+    // 使能串口数据处理函数
+    mainMilliSec = 80;
     timer1->start(mainMilliSec);
 
     // 状态栏显示初始信息

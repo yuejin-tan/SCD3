@@ -14,6 +14,180 @@
 
 #define TYJ_TO_STR(str) #str
 
+// 新增modbus函数簇
+static int scd_mdbNewPort_impl(lua_State* L)
+{
+    int portNum = lua_tointeger(L, 1);
+    int baud = lua_tointeger(L, 2);
+    int timeout = lua_tointeger(L, 3);
+    int retryNum = lua_tointeger(L, 4);
+
+    mainWinPtr->luaScript1->mPortNum = portNum;
+    mainWinPtr->luaScript1->mPortNumStr = QStringLiteral("COM%1").arg(portNum);
+
+    if (mainWinPtr->luaScript1->mClient)
+    {
+        if (mainWinPtr->luaScript1->mClient->state() != QModbusDevice::UnconnectedState)
+        {
+            printf("COM%d:warning, multi connect\n", mainWinPtr->luaScript1->mPortNum);
+            mainWinPtr->luaScript1->mClient->disconnectDevice();
+        }
+    }
+    else
+    {
+        mainWinPtr->luaScript1->mClient = new QModbusRtuSerialMaster();
+    }
+
+    mainWinPtr->luaScript1->mClient->setConnectionParameter(QModbusDevice::SerialPortNameParameter, mainWinPtr->luaScript1->mPortNumStr);
+    mainWinPtr->luaScript1->mClient->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::NoParity);
+    mainWinPtr->luaScript1->mClient->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baud);
+    mainWinPtr->luaScript1->mClient->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, QSerialPort::Data8);
+    mainWinPtr->luaScript1->mClient->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, QSerialPort::OneStop);
+    mainWinPtr->luaScript1->mClient->setTimeout(timeout);
+    mainWinPtr->luaScript1->mClient->setNumberOfRetries(retryNum);
+
+    if (!mainWinPtr->luaScript1->mClient->connectDevice())
+    {
+        printf("COM%d:connection err\n", mainWinPtr->luaScript1->mPortNum);
+    }
+
+    printf("COM%d:modbus master start script end.\n", mainWinPtr->luaScript1->mPortNum);
+    return 0;
+}
+
+static int scd_mdbClosePort_impl(lua_State* L)
+{
+    Q_UNUSED(L);
+    if (mainWinPtr->luaScript1->mClient)
+    {
+        if (mainWinPtr->luaScript1->mClient->state() != QModbusDevice::UnconnectedState)
+        {
+            mainWinPtr->luaScript1->mClient->disconnectDevice();
+        }
+    }
+    else
+    {
+        printf("COM%d:no client but close\n", mainWinPtr->luaScript1->mPortNum);
+        return 0;
+    }
+
+    printf("COM%d:modbus master closed.\n", mainWinPtr->luaScript1->mPortNum);
+    return 0;
+}
+
+static int scd_mdbReadRegF32_impl(lua_State* L)
+{
+    int mdbAddr = lua_tointeger(L, 1);
+    int regAddr = lua_tointeger(L, 2);
+    double retVal = -1;
+
+    QModbusDataUnit pkg1(QModbusDataUnit::HoldingRegisters, regAddr, 2);
+
+    if (mainWinPtr->luaScript1->mClient)
+    {
+        if (mainWinPtr->luaScript1->mClient->state() != QModbusDevice::ConnectedState)
+        {
+            printf("COM%d:no connect but send\n", mainWinPtr->luaScript1->mPortNum);
+            goto scd_mdbReadRegF32_impl_err;
+        }
+    }
+    else
+    {
+        printf("COM%d:no client but send\n", mainWinPtr->luaScript1->mPortNum);
+        goto scd_mdbReadRegF32_impl_err;
+    }
+
+    mainWinPtr->luaScript1->staReplied = 0;
+
+    if (QModbusReply* reply = mainWinPtr->luaScript1->mClient->sendReadRequest(pkg1, mdbAddr))
+    {
+        if (!reply->isFinished())
+        {
+            QObject::connect(reply, &QModbusReply::finished, [=]()
+                {
+                    mainWinPtr->luaScript1->staReplied = 1;
+
+                    if (!reply) {
+                        printf("COM%d:Read no reply err\n", mainWinPtr->luaScript1->mPortNum);
+                        mainWinPtr->luaScript1->staReplied = -1;
+                        return;
+                    }
+
+                    if (reply->error() == QModbusDevice::NoError)
+                    {
+                        const QModbusDataUnit unit = reply->result();
+                        mainWinPtr->luaScript1->mdbAns = unit.value(0);
+                        mainWinPtr->luaScript1->mdbAns2 = unit.value(1);
+                    }
+                    else if (reply->error() == QModbusDevice::ProtocolError)
+                    {
+                        qDebug() << (QStringLiteral("%1:Read response error: %2 (Mobus exception: 0x%3)")
+                            .arg(mainWinPtr->luaScript1->mPortNumStr)
+                            .arg(reply->errorString())
+                            .arg(reply->rawResult().exceptionCode(), -1, 16));
+                        mainWinPtr->luaScript1->staReplied = -1;
+                    }
+                    else
+                    {
+                        qDebug() << (QStringLiteral("%1:Read response error: %2 (code: 0x%3)")
+                            .arg(mainWinPtr->luaScript1->mPortNumStr)
+                            .arg(reply->errorString())
+                            .arg(reply->error(), -1, 16));
+                        mainWinPtr->luaScript1->staReplied = -1;
+                    }
+                    reply->deleteLater();
+                });
+        }
+        else
+            delete reply; // broadcast replies return immediately
+    }
+    else
+    {
+        qDebug() << (QStringLiteral("%1:Read no reply err2")
+            .arg(mainWinPtr->luaScript1->mPortNumStr)
+            );
+    }
+
+    mainWinPtr->luaScript1->isDurDelay = true;
+    while (mainWinPtr->luaScript1->staReplied == 0)
+    {
+        QApplication::processEvents();
+    }
+    mainWinPtr->luaScript1->isDurDelay = false;
+
+    if (mainWinPtr->luaScript1->staReplied > 0)
+    {
+        // 得到正确信息
+        union mdb_float_dec
+        {
+            float f32;
+            struct
+            {
+                uint32_t u32_1 : 8;
+                uint32_t u32_2 : 8;
+                uint32_t u32_3 : 8;
+                uint32_t u32_4 : 8;
+            }u32_div4;
+            struct
+            {
+                uint16_t u16_1;
+                uint16_t u16_2;
+            }u16_t2;
+        }dec1;
+        dec1.u16_t2.u16_1 = mainWinPtr->luaScript1->mdbAns;
+        dec1.u16_t2.u16_2 = mainWinPtr->luaScript1->mdbAns2;
+        retVal = dec1.f32;
+
+        printf("COM%d:modbus get %f\n", mainWinPtr->luaScript1->mPortNum, retVal);
+    }
+
+scd_mdbReadRegF32_impl_err:
+
+    lua_pushnumber(L, retVal);
+    return 1;
+}
+// 原函数簇
+
 static int scd_callTest(lua_State* L)
 {
     size_t len;
@@ -24,6 +198,8 @@ static int scd_callTest(lua_State* L)
 
 static int scd_delayMs_impl(lua_State* L)
 {
+    mainWinPtr->luaScript1->isDurDelay = true;
+
     int ms2delay = lua_tointeger(L, 1);
 
     clock_t startT = clock();
@@ -35,6 +211,7 @@ static int scd_delayMs_impl(lua_State* L)
         tmpT = clock();
     }
 
+    mainWinPtr->luaScript1->isDurDelay = false;
     return 0;
 }
 
@@ -254,6 +431,15 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
 
     // 中断定时
     timer1 = new QTimer(this);
+    // delay状态
+    isDurDelay = false;
+
+    // 回复状态
+    staReplied = 0;
+    mdbAns = 0;
+    mdbAns2 = 0;
+    mPortNum = 0;
+    mClient = nullptr;
 
     // 打开基本库
     luaopen_base(lua_sta_init);
@@ -266,6 +452,9 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
     lua_register(lua_sta_init, TYJ_TO_STR(scd_getVar_impl), scd_getVar_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_sendStr_impl), scd_sendStr_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_delayMs_impl), scd_delayMs_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbNewPort_impl), scd_mdbNewPort_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbClosePort_impl), scd_mdbClosePort_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbReadRegF32_impl), scd_mdbReadRegF32_impl);
 
     //传递全局变量
     lua_pushstring(lua_sta_init, "SCD " SCD_VERSION " @ " LUA_VERSION);
@@ -358,6 +547,11 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
 
 LuaScript::~LuaScript()
 {
+    scd_mdbClosePort_impl(nullptr);
+
+    if (mClient)
+        delete mClient;
+
     lua_close(lua_sta_init);
     delete timer1;
 }
@@ -379,6 +573,13 @@ QString LuaScript::getSaveDir()
 
 void LuaScript::inter_cmd_timer_out()
 {
+    if (isDurDelay)
+    {
+        // 为避免冲突，在scd_delay期间不执行周期调用功能
+        printf("during scd_delay, scd period run cancel once\n");
+        return;
+    }
+
     int elapsedMs = startTime1.msecsTo(QTime::currentTime());
     // 调用lua函数
     lua_getglobal(lua_sta_init, "scd_periodRun");
@@ -397,6 +598,13 @@ void LuaScript::inter_cmd_timer_out()
 
 void LuaScript::exeStr(QString luaStr)
 {
+    if (isDurDelay)
+    {
+        // 为避免冲突，在scd_delay期间不执行周期调用功能
+        printf("during scd_delay, scd exeStr cancel once\n");
+        return;
+    }
+
     QByteArray tmp = luaStr.toLocal8Bit();
     luaL_loadstring(lua_sta_init, tmp.data());
 

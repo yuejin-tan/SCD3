@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += serialport
+QT       += serialbus
 QT       += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
@@ -22,6 +23,7 @@ UI_DIR=./../SCD3/
 
 # 控制台程序
 CONFIG += console
+CONFIG += c++17
 # CONFIG += staticlib
 # DESTDIR 运行路径
 # INCLUDEPATH 头文件路径
