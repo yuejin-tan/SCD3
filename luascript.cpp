@@ -12,7 +12,44 @@
 
 #include "tyjplot.h"
 
+#include "resboxctrl.h"
+
 #define TYJ_TO_STR(str) #str
+
+// 堆屎一把梭
+resBoxCtrl* hrbc1 = nullptr;
+
+// 新增 电阻箱控制 函数簇
+static int scd_rBox_init_impl(lua_State* L)
+{
+    int portNum = lua_tointeger(L, 1);
+
+    if (hrbc1 == nullptr)
+    {
+        hrbc1 = new resBoxCtrl(mainWinPtr, portNum);
+        hrbc1->show();
+    }
+    else
+    {
+        hrbc1->show();
+        hrbc1->raise();
+    }
+
+    return 0;
+}
+
+static int scd_rBox_ctrl(lua_State* L)
+{
+    int rNo = lua_tointeger(L, 1);
+    int sta = lua_tointeger(L, 2);
+
+    if (hrbc1)
+    {
+        hrbc1->resCtrl(rNo, sta);
+    }
+
+    return 0;
+}
 
 // 新增modbus函数簇
 static int scd_mdbNewPort_impl(lua_State* L)
@@ -455,6 +492,8 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
     lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbNewPort_impl), scd_mdbNewPort_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbClosePort_impl), scd_mdbClosePort_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbReadRegF32_impl), scd_mdbReadRegF32_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_rBox_init_impl), scd_rBox_init_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_rBox_ctrl), scd_rBox_ctrl);
 
     //传递全局变量
     lua_pushstring(lua_sta_init, "SCD " SCD_VERSION " @ " LUA_VERSION);
@@ -553,7 +592,9 @@ LuaScript::~LuaScript()
         delete mClient;
 
     lua_close(lua_sta_init);
-    delete timer1;
+
+    // 对象树自己管理
+    // delete timer1;
 }
 
 QString LuaScript::getSaveDir()

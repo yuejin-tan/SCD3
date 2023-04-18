@@ -140,6 +140,7 @@ SOURCES += \
         qcp2_1/selectiondecorator-bracket.cpp \
         qcp2_1/selectionrect.cpp \
         qcp2_1/vector2d.cpp \
+        resboxctrl.cpp \
         scopeform.cpp \
         tyjplot.cpp \
         tyjscrollbar.cpp
@@ -232,6 +233,7 @@ HEADERS += \
         qcp2_1/selectiondecorator-bracket.h \
         qcp2_1/selectionrect.h \
         qcp2_1/vector2d.h \
+        resboxctrl.h \
         scopeform.h \
         tyjplot.h \
         tyjscrollbar.h
@@ -241,6 +243,7 @@ FORMS += \
         inform.ui \
         luaform.ui \
         mainwindow.ui \
+        resboxctrl.ui \
         scopeform.ui
 
 win32-msvc*: {undefined

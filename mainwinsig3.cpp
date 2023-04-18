@@ -103,18 +103,24 @@ void MainWindow::fpsTimerOut()
                             // 先检查数据数量是否对的上
                             if (values->size() != names->size())
                             {
-                                // 关闭串口
-                                tyj_serial->close();
-                                // 调整ui
-                                setUiAsSciChg(false);
-                                // 关闭定时发送
-                                ui->checkBox->setCheckState(Qt::Unchecked);
-                                QMessageBox::information(this, QString("错误"), "收到" + QString::number(values->size()) + "个数，与表格对不上", QMessageBox::Ok);
-                                return;
-                            }
+                                // // 关闭串口
+                                // tyj_serial->close();
+                                // // 调整ui
+                                // setUiAsSciChg(false);
+                                // // 关闭定时发送
+                                // ui->checkBox->setCheckState(Qt::Unchecked);
+                                // QMessageBox::information(this, QString("错误"), "收到" + QString::number(values->size()) + "个数，与表格对不上", QMessageBox::Ok);
+                                // return;
 
-                            // 修改表格
-                            emit tableRefreshSig();
+                                // 改为只提出警告
+                                ui->statusBar->showMessage(QStringLiteral("全局帧接收出错！"), 1000);
+                                printf("recv global frame num err!\n");
+                            }
+                            else
+                            {
+                                // 修改表格
+                                emit tableRefreshSig();
+                            }
                         }
                         else
                         {
