@@ -31,9 +31,6 @@ void MainWindow::fpsTimerOut()
 {
     if (isSciOn)
     {
-        // 串口打开时对状态显示进行更新
-        staBarRefresh(isFrameAligned == 2);
-
         // 需保证串口开启
         if (isFrameAligned == 2)
         {
@@ -65,6 +62,7 @@ void MainWindow::fpsTimerOut()
                         else
                         {
                             // 真正处理，在非暂停模式下才更新缓冲区
+                            normalPkgSize = valTemp->size();
                             scopeForm1->addNewData(valTemp);
                         }
                         // qDebug() << "vofa" << endl;
@@ -313,6 +311,8 @@ void MainWindow::fpsTimerOut()
                 }
             }
         }
+        // 串口打开时对状态显示进行更新
+        staBarRefresh(isFrameAligned == 2);
     }
     else
     {

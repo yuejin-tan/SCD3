@@ -30,7 +30,7 @@ namespace Ui
     class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow: public QMainWindow
 {
     Q_OBJECT
 
@@ -119,6 +119,8 @@ public:
     QVector<int>* varNum;
     // 供收包时临时记录
     QVector<float>* valTemp;
+    // 常规包大小
+    int normalPkgSize = 1;
     // dump缓存
     QVector<float>* dumpBuff;
     // print协议字符串储存
