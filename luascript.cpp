@@ -26,7 +26,7 @@ static int scd_rBox_init_impl(lua_State* L)
 
     if (hrbc1 == nullptr)
     {
-        hrbc1 = new resBoxCtrl(mainWinPtr, portNum);
+        hrbc1 = new resBoxCtrl(nullptr, portNum);
         hrbc1->show();
     }
     else
@@ -590,6 +590,9 @@ LuaScript::~LuaScript()
 
     if (mClient)
         delete mClient;
+
+    if (hrbc1)
+        delete hrbc1;
 
     lua_close(lua_sta_init);
 
