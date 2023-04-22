@@ -118,6 +118,7 @@ void scopeForm::addNewData(QVector<float>* data)
             }
         }
 
+        showNormal();
         ui->tyj_widget->setRightTimeSlot(tNow);
 
         auto xRange = ui->tyj_widget->xAxis->range();
