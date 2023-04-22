@@ -319,3 +319,21 @@ function scd_YaxisSet(name, low, up)
 
 	scd_YaxisSet_impl(name, low, up)
 end
+
+function scd_valRangeSet(name, max1, min1)
+	--参数检查
+	if type(name) ~= "string" then
+	print("参数name类型错误");
+	return;
+	end
+	if type(max1) ~= "number" then
+	print("参数max1类型错误");
+	return;
+	end
+	if type(min1) ~= "number" then
+	print("参数min1类型错误");
+	return;
+	end
+
+	scd_valRangeSet_impl(name, max1, min1)
+end
