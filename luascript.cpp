@@ -2,9 +2,11 @@
 
 #include "main.h"
 #include "mainwindow.h"
+#include "scopeform.h"
 #include "inform.h"
 #include "ui_mainwindow.h"
 #include "ui_inform.h"
+#include "ui_scopeform.h"
 #include <QClipboard>
 #include <QFileDialog>
 
@@ -15,6 +17,28 @@
 #include "resboxctrl.h"
 
 #define TYJ_TO_STR(str) #str
+
+// 继续堆屎，通过脚本设置绘图的坐标轴范围
+static int scd_YaxisSet_impl(lua_State* L)
+{
+    size_t len;
+    const char* hNameChr = lua_tolstring(L, 1, &len);
+    double low = lua_tonumber(L, 2);
+    double up = lua_tonumber(L, 3);
+
+    QString tarNameStr(hNameChr);
+
+    for (auto pltx : mainWinPtr->scopeForm1->ui->tyj_widget->pltItemVect)
+    {
+        if (pltx.name == tarNameStr)
+        {
+            pltx.graphx->valueAxis()->setRange(low, up);
+            break;
+        }
+    }
+
+    return 0;
+}
 
 // 堆屎一把梭
 resBoxCtrl* hrbc1 = nullptr;
@@ -494,6 +518,7 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
     lua_register(lua_sta_init, TYJ_TO_STR(scd_mdbReadRegF32_impl), scd_mdbReadRegF32_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_rBox_init_impl), scd_rBox_init_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_rBox_ctrl), scd_rBox_ctrl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_YaxisSet_impl), scd_YaxisSet_impl);
 
     //传递全局变量
     lua_pushstring(lua_sta_init, "SCD " SCD_VERSION " @ " LUA_VERSION);
