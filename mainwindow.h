@@ -41,8 +41,6 @@ public:
 signals:
     void startToDrawSig(int num);
 
-    void syncTableSig(int highSpeedBufferSize);
-
     void tableRefreshSig();
 
 public slots:
@@ -86,8 +84,6 @@ public:
     void closeEvent(QCloseEvent* event);
 
     void staBarRefresh(bool frameLocked);
-
-    void pauseFcn();
 
     Ui::MainWindow* ui;
     // 串口类

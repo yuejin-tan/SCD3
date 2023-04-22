@@ -91,7 +91,10 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "coroutine": "cpp",
-        "resumable": "cpp"
+        "resumable": "cpp",
+        "array": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     },
     "workbench.colorCustomizations": {
         "editor.lineHighlightBackground": "#1073cf2d",
