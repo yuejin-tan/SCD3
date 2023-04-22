@@ -15,7 +15,8 @@ scopeForm::scopeForm(QWidget* parent)
 {
     ui->setupUi(this);
 
-    isRecording = true;
+    isRecording = false;
+    ui->pushButton_startstop->setText(QStringLiteral("开始记录"));
     deltaPkg = 1;
 
     ui->tyj_widget->setOpenGl(true);

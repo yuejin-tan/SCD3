@@ -8,7 +8,7 @@ void MainWindow::on_searchButton_clicked()
     ui->portNameBox->clear();
     // 通过QSerialPortInfo查找可用串口
     const auto infos = QSerialPortInfo::availablePorts();
-    for (const QSerialPortInfo &info : infos)
+    for (const QSerialPortInfo& info : infos)
     {
         // 显示windows串口号和描述字符串
         ui->portNameBox->addItem(info.portName() + QString(' ') + info.description());
@@ -135,11 +135,15 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
     }
 }
 
+#include "ui_scopeform.h"
+
 void MainWindow::on_fcnButton1_clicked()
 {
     scopeForm1->show();
     scopeForm1->raise();
     scopeForm1->showNormal();
+    scopeForm1->isRecording = true;
+    scopeForm1->ui->pushButton_startstop->setText(QStringLiteral("暂停记录"));
     emit startToDrawSig(1);
 }
 
