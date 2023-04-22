@@ -6,10 +6,26 @@
 
 #include "QDebug"
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
+#include "winauthoriation.h"
+#include "authwin.h"
+
+MainWindow::MainWindow(QWidget* parent): QMainWindow(parent),
 ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // 运行主机校验
+    // 交由对象树自动回收内存
+    auto pWa = new winAuthoriation(this);
+    if (!pWa->checkAuthor())
+    {
+        auto pAuthWin = new authWin(this);
+        auto UID_raw = pWa->getRegID();
+        auto UID_B64 = UID_raw.toBase64();
+        // pAuthWin->setUIDStr(QString(UID_B64));
+        qDebug() << "ID:" << QString(UID_B64);
+        pAuthWin->show();
+    }
 
     // 串口关闭
     setUiAsSciChg(false);

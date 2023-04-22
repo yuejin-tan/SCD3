@@ -21,6 +21,9 @@ TEMPLATE = app
 # 指定自动生成的头文件位置
 UI_DIR=./../SCD3/
 
+# openssl
+LIBS += -L./../SCD3/libs/ -llibcrypto
+
 # 控制台程序
 CONFIG += console
 CONFIG += c++17
@@ -47,6 +50,7 @@ DEFINES += QCUSTOMPLOT_USE_OPENGL
 RC_ICONS = logo.ico
 
 SOURCES += \
+        authwin.cpp \
         graphset.cpp \
         highlighter.cpp \
         inform.cpp \
@@ -92,6 +96,7 @@ SOURCES += \
         mainwinsig2.cpp \
         mainwinsig3.cpp \
         mainwinsig4.cpp \
+        openssl/applink.c \
         qcp2_1/axis/axis.cpp \
         qcp2_1/axis/axisticker.cpp \
         qcp2_1/axis/axistickerdatetime.cpp \
@@ -143,9 +148,11 @@ SOURCES += \
         resboxctrl.cpp \
         scopeform.cpp \
         tyjplot.cpp \
-        tyjscrollbar.cpp
+        tyjscrollbar.cpp \
+        winauthoriation.cpp
 
 HEADERS += \
+        authwin.h \
         graphset.h \
         highlighter.h \
         inform.h \
@@ -181,6 +188,112 @@ HEADERS += \
         luascript.h \
         main.h \
         mainwindow.h \
+        openssl/__DECC_INCLUDE_EPILOGUE.H \
+        openssl/__DECC_INCLUDE_PROLOGUE.H \
+        openssl/aes.h \
+        openssl/asn1.h \
+        openssl/asn1_mac.h \
+        openssl/asn1err.h \
+        openssl/asn1t.h \
+        openssl/async.h \
+        openssl/asyncerr.h \
+        openssl/bio.h \
+        openssl/bioerr.h \
+        openssl/blowfish.h \
+        openssl/bn.h \
+        openssl/bnerr.h \
+        openssl/buffer.h \
+        openssl/buffererr.h \
+        openssl/camellia.h \
+        openssl/cast.h \
+        openssl/cmac.h \
+        openssl/cms.h \
+        openssl/cmserr.h \
+        openssl/comp.h \
+        openssl/comperr.h \
+        openssl/conf.h \
+        openssl/conf_api.h \
+        openssl/conferr.h \
+        openssl/crypto.h \
+        openssl/cryptoerr.h \
+        openssl/ct.h \
+        openssl/cterr.h \
+        openssl/des.h \
+        openssl/dh.h \
+        openssl/dherr.h \
+        openssl/dsa.h \
+        openssl/dsaerr.h \
+        openssl/dtls1.h \
+        openssl/e_os2.h \
+        openssl/ebcdic.h \
+        openssl/ec.h \
+        openssl/ecdh.h \
+        openssl/ecdsa.h \
+        openssl/ecerr.h \
+        openssl/engine.h \
+        openssl/engineerr.h \
+        openssl/err.h \
+        openssl/evp.h \
+        openssl/evperr.h \
+        openssl/hmac.h \
+        openssl/idea.h \
+        openssl/kdf.h \
+        openssl/kdferr.h \
+        openssl/lhash.h \
+        openssl/md2.h \
+        openssl/md4.h \
+        openssl/md5.h \
+        openssl/mdc2.h \
+        openssl/modes.h \
+        openssl/obj_mac.h \
+        openssl/objects.h \
+        openssl/objectserr.h \
+        openssl/ocsp.h \
+        openssl/ocsperr.h \
+        openssl/opensslconf.h \
+        openssl/opensslv.h \
+        openssl/ossl_typ.h \
+        openssl/pem.h \
+        openssl/pem2.h \
+        openssl/pemerr.h \
+        openssl/pkcs12.h \
+        openssl/pkcs12err.h \
+        openssl/pkcs7.h \
+        openssl/pkcs7err.h \
+        openssl/rand.h \
+        openssl/rand_drbg.h \
+        openssl/randerr.h \
+        openssl/rc2.h \
+        openssl/rc4.h \
+        openssl/rc5.h \
+        openssl/ripemd.h \
+        openssl/rsa.h \
+        openssl/rsaerr.h \
+        openssl/safestack.h \
+        openssl/seed.h \
+        openssl/sha.h \
+        openssl/srp.h \
+        openssl/srtp.h \
+        openssl/ssl.h \
+        openssl/ssl2.h \
+        openssl/ssl3.h \
+        openssl/sslerr.h \
+        openssl/stack.h \
+        openssl/store.h \
+        openssl/storeerr.h \
+        openssl/symhacks.h \
+        openssl/tls1.h \
+        openssl/ts.h \
+        openssl/tserr.h \
+        openssl/txt_db.h \
+        openssl/ui.h \
+        openssl/uierr.h \
+        openssl/whrlpool.h \
+        openssl/x509.h \
+        openssl/x509_vfy.h \
+        openssl/x509err.h \
+        openssl/x509v3.h \
+        openssl/x509v3err.h \
         qcp2_1/axis/axis.h \
         qcp2_1/axis/axisticker.h \
         qcp2_1/axis/axistickerdatetime.h \
@@ -236,9 +349,11 @@ HEADERS += \
         resboxctrl.h \
         scopeform.h \
         tyjplot.h \
-        tyjscrollbar.h
+        tyjscrollbar.h \
+        winauthoriation.h
 
 FORMS += \
+        authwin.ui \
         graphset.ui \
         inform.ui \
         luaform.ui \

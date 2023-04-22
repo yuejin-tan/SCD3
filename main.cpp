@@ -28,6 +28,11 @@ int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
 
+    // info
+    QCoreApplication::setOrganizationName("TYJ");
+    QCoreApplication::setApplicationName("SCD3");
+    QCoreApplication::setApplicationVersion(SCD_VERSION);
+
     // trans
     QTranslator t;
     t.load(QStringLiteral(":/translations/qt_zh_CN.qm"));

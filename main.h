@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define SCD_VERSION "V0.3.3"
+#define SCD_VERSION "V0.3.4"
 #define HIGHSPEED_BUFF_NUM 16
 
 class MainWindow;
