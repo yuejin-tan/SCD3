@@ -150,7 +150,6 @@ public:
         baudrateBox->addItem(QString());
         baudrateBox->addItem(QString());
         baudrateBox->addItem(QString());
-        baudrateBox->addItem(QString());
         baudrateBox->setObjectName(QString::fromUtf8("baudrateBox"));
 
         horizontalLayout_3->addWidget(baudrateBox);
@@ -393,7 +392,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        baudrateBox->setCurrentIndex(10);
+        baudrateBox->setCurrentIndex(9);
         ParityBox->setCurrentIndex(0);
         portNameBox->setCurrentIndex(0);
 
@@ -417,9 +416,8 @@ public:
         baudrateBox->setItemText(7, QCoreApplication::translate("MainWindow", "460800", nullptr));
         baudrateBox->setItemText(8, QCoreApplication::translate("MainWindow", "921600", nullptr));
         baudrateBox->setItemText(9, QCoreApplication::translate("MainWindow", "1000000", nullptr));
-        baudrateBox->setItemText(10, QCoreApplication::translate("MainWindow", "5000000", nullptr));
 
-        baudrateBox->setCurrentText(QCoreApplication::translate("MainWindow", "5000000", nullptr));
+        baudrateBox->setCurrentText(QCoreApplication::translate("MainWindow", "1000000", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "\346\225\260\346\215\256\344\275\215\357\274\232", nullptr));
         dataBitsBox->setItemText(0, QCoreApplication::translate("MainWindow", "8", nullptr));
         dataBitsBox->setItemText(1, QCoreApplication::translate("MainWindow", "7", nullptr));
