@@ -113,10 +113,10 @@
          <item>
           <widget class="QComboBox" name="baudrateBox">
            <property name="currentText">
-            <string>1000000</string>
+            <string>460800</string>
            </property>
            <property name="currentIndex">
-            <number>9</number>
+            <number>7</number>
            </property>
            <item>
             <property name="text">
