@@ -18,6 +18,59 @@
 
 #define TYJ_TO_STR(str) #str
 
+// 继续堆屎，增加LUA 的绘图方面API
+static int scd_tabItemSelect_impl(lua_State* L)
+{
+    size_t len;
+    const char* hNameChr = lua_tolstring(L, 1, &len);
+
+    QString tarNameStr(hNameChr);
+
+    int cnt = mainWinPtr->names->size();
+    for (int ii = 0;ii < cnt;ii++)
+    {
+        if (mainWinPtr->ui->tableWidget->item(ii, 0)->text() == tarNameStr)
+        {
+            if (mainWinPtr->ui->tableWidget->item(ii, 0))
+            {
+                mainWinPtr->ui->tableWidget->item(ii, 0)->setBackgroundColor(mainWinPtr->highlightColor);
+            }
+            break;
+        }
+    }
+
+    return 0;
+}
+
+static int scd_plotItemSelect_impl(lua_State* L)
+{
+    size_t len;
+    const char* hNameChr = lua_tolstring(L, 1, &len);
+
+    QString tarNameStr(hNameChr);
+
+    int ii = 0;
+    for (auto namex : mainWinPtr->scopeForm1->pltVarNames)
+    {
+        if (namex == tarNameStr)
+        {
+            mainWinPtr->scopeForm1->ui->tyj_widget->addGraphItem(namex, mainWinPtr->scopeForm1->pltVarDatas[ii]);
+            break;
+        }
+        ii++;
+    }
+
+    return 0;
+}
+
+static int scd_plotCfg(lua_State* L)
+{
+    Q_UNUSED(L);
+    mainWinPtr->on_cfgButton_clicked();
+
+    return 0;
+}
+
 // 继续堆屎，通过脚本设置绘图的坐标轴范围
 static int scd_YaxisSet_impl(lua_State* L)
 {
@@ -560,6 +613,9 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
     lua_register(lua_sta_init, TYJ_TO_STR(scd_rBox_ctrl), scd_rBox_ctrl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_YaxisSet_impl), scd_YaxisSet_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_valRangeSet_impl), scd_valRangeSet_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_tabItemSelect_impl), scd_tabItemSelect_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_plotItemSelect_impl), scd_plotItemSelect_impl);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_plotCfg), scd_plotCfg);
 
     //传递全局变量
     lua_pushstring(lua_sta_init, "SCD " SCD_VERSION " @ " LUA_VERSION);
