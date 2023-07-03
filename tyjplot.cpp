@@ -25,9 +25,9 @@ tyjPlot::tyjPlot(QWidget* parent)
 
     // 中键提示框
     textLabel_mid = new QCPItemText(this);
-    textLabel_mid->setPositionAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    textLabel_mid->setPositionAlignment(Qt::AlignTop | Qt::AlignRight);
     textLabel_mid->position->setType(QCPItemPosition::ptAxisRectRatio);
-    textLabel_mid->position->setCoords(0.2, 0.02);
+    textLabel_mid->position->setCoords(0.985, 0.02);
     textLabel_mid->setText("init");
     QFont tmpFont;
     tmpFont.setPixelSize(20);
@@ -84,7 +84,7 @@ tyjPlot::tyjPlot(QWidget* parent)
     legend->setSelectedIconBorderPen(Qt::NoPen);
     // legend box shall not be selectable, only legend items
     legend->setSelectableParts(QCPLegend::spItems);
-    axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
+    axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignLeft);
 
     // 坐标轴样式
     QPen axisPen_x(frontColorx, 1);
