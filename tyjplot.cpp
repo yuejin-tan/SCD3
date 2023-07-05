@@ -5,6 +5,12 @@
 #include <QtWidgets/QMenu>
 #include <QtCore/QDebug>
 
+// 堆屎加入统计功能
+#include "main.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "math.h"
+
 tyjPlot::tyjPlot(QWidget* parent)
     : QCustomPlot(parent) {
     // 初始化状态量
@@ -394,12 +400,14 @@ void tyjPlot::mousePressSlotx(QMouseEvent* event) {
             xL2->point2->setCoords(xAxis->range().lower, y_val);
             xL2->setVisible(true);
 
-            textLabel_mid->setText(QStringLiteral("x1：%0\t\ty1：%1\nx2：%2\t\ty2：%3\ndx：%4\t\tdy：%5")
+            textLabel_mid->setText(QStringLiteral("x1：%0\t\ty1：%1\nx2：%2\t\ty2：%3\ndx：%4\t\tdy：%5\n1000/dx：%6")
                 .arg(refPoint1.getX(), 0, 'g', 5)
                 .arg(refPoint1.getY(), 0, 'g', 5)
-                .arg(x_val, 0, 'g', 5).arg(y_val, 0, 'g', 5)
+                .arg(x_val, 0, 'g', 5)
+                .arg(y_val, 0, 'g', 5)
                 .arg(abs(x_val - refPoint1.getX()), 0, 'g', 5)
-                .arg(abs(y_val - refPoint1.getY()), 0, 'g', 5));
+                .arg(abs(y_val - refPoint1.getY()), 0, 'g', 5)
+                .arg(1000.0 / abs(x_val - refPoint1.getX()), 0, 'g', 5));
 
             xyLineSta = secondLinePressed;
 
@@ -482,13 +490,14 @@ void tyjPlot::mouseReleaseSlotx(QMouseEvent* event) {
             xL2->setVisible(true);
 
             ;
-            textLabel_mid->setText(QStringLiteral("x1：%0\t\ty1：%1\nx2：%2\t\ty2：%3\ndx：%4\t\tdy：%5")
+            textLabel_mid->setText(QStringLiteral("x1：%0\t\ty1：%1\nx2：%2\t\ty2：%3\ndx：%4\t\tdy：%5\n1000/dx：%6")
                 .arg(refPoint1.getX(), 0, 'g', 5)
                 .arg(refPoint1.getY(), 0, 'g', 5)
                 .arg(x_val, 0, 'g', 5)
                 .arg(y_val, 0, 'g', 5)
                 .arg(abs(x_val - refPoint1.getX()), 0, 'g', 5)
-                .arg(abs(y_val - refPoint1.getY()), 0, 'g', 5));
+                .arg(abs(y_val - refPoint1.getY()), 0, 'g', 5)
+                .arg(1000.0 / abs(x_val - refPoint1.getX()), 0, 'g', 5));
 
             xyLineSta = secondLineReleased;
 
@@ -562,13 +571,14 @@ void tyjPlot::mouseMoveSlotx(QMouseEvent* event) {
         xL2->point1->setCoords(xAxis->range().upper, y_val);
         xL2->point2->setCoords(xAxis->range().lower, y_val);
 
-        textLabel_mid->setText(QStringLiteral("x1：%0\t\ty1：%1\nx2：%2\t\ty2：%3\ndx：%4\t\tdy：%5")
+        textLabel_mid->setText(QStringLiteral("x1：%0\t\ty1：%1\nx2：%2\t\ty2：%3\ndx：%4\t\tdy：%5\n1000/dx：%6")
             .arg(refPoint1.getX(), 0, 'g', 5)
             .arg(refPoint1.getY(), 0, 'g', 5)
             .arg(x_val, 0, 'g', 5)
             .arg(y_val, 0, 'g', 5)
             .arg(abs(x_val - refPoint1.getX()), 0, 'g', 5)
-            .arg(abs(y_val - refPoint1.getY()), 0, 'g', 5));
+            .arg(abs(y_val - refPoint1.getY()), 0, 'g', 5)
+            .arg(1000.0 / abs(x_val - refPoint1.getX()), 0, 'g', 5));
 
         ifReplot = true;
     } break;
@@ -691,7 +701,45 @@ void tyjPlot::plottableDoubleClickSlot(QCPAbstractPlottable* plottable, int data
         if ((void*)graphx == (void*)plottable)
         {
             // 匹配上了
-            fcnGraphSetUtil(tmpObjx.name);
+            // 双击图不是弹出设置框，而是将统计信息摆烂显示在发送窗口中
+            // fcnGraphSetUtil(tmpObjx.name);
+
+            const QCPGraphData* startIter;
+            const QCPGraphData* endIter;
+            auto xRange = xAxis->range();
+            startIter = tmpObjx.dataPtrx->findBegin(xRange.lower);
+            endIter = tmpObjx.dataPtrx->findEnd(xRange.upper);
+
+            double maxx = startIter->value;
+            double minx = maxx;
+            double sumx = maxx;
+            double sumx2 = maxx * maxx;
+            int cnt = 1;
+
+            startIter++;
+            while (startIter != endIter)
+            {
+                double val = startIter->value;
+                maxx = fmax(maxx, val);
+                minx = fmin(minx, val);
+                sumx += val;
+                sumx2 += val * val;
+                cnt++;
+                startIter++;
+            }
+            double avgx = sumx / cnt;
+            int cnt2 = cnt > 1 ? cnt : 2;
+            double sx = sqrt((sumx2 - avgx * avgx * cnt) / (cnt2 - 1));
+
+            QString dataStr = (QStringLiteral("\n\navg：%0\nsx：%1\nmin：%2\nmax：%3\ncnt：%4")
+                .arg(avgx, 0, 'g', 5)
+                .arg(sx, 0, 'g', 5)
+                .arg(minx, 0, 'g', 5)
+                .arg(maxx, 0, 'g', 5)
+                .arg(cnt));
+
+            mainWinPtr->ui->sendPlainTextEdit->setPlainText(tmpObjx.name + dataStr);
+
             break;
         }
     }

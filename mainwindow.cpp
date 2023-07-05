@@ -163,7 +163,7 @@ void MainWindow::setOKSlot(void)
     ui->tableWidget->setColumnCount(5);
     ui->tableWidget->setColumnWidth(0, 240);
     ui->tableWidget->setColumnWidth(1, 80);
-    ui->tableWidget->setColumnWidth(2, 150);
+    ui->tableWidget->setColumnWidth(2, 125);
     ui->tableWidget->setHorizontalHeaderLabels(headNameList);
     ui->tableWidget->setRowCount(cnt);
     for (int i = 0; i < cnt; i++)
