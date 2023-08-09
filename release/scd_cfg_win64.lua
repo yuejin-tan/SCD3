@@ -352,3 +352,13 @@ function scd_plotItemSelect(name)
 
     scd_plotItemSelect_impl(name)
 end
+
+function scd_deltaPkgSet(deltaPkg)
+    -- 参数检查
+    if type(deltaPkg) ~= "number" then
+        print("参数deltaPkg类型错误");
+        return;
+    end
+
+    scd_deltaPkgSet_impl(deltaPkg)
+end

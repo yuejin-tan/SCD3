@@ -44,7 +44,7 @@
      <property name="text">
       <string>欢迎使用SCD3！检测到并非在tyj的电脑上运行！
 请注意该软件是tyj在业余时间写着玩的，还有很多bug没改完，在部分情况下可能会卡死退出，问就是要重启软件。
-上功率前请在弱电环境下进行充分测试，不要依赖本程序实现保护停机，要保证控制器自身能实现异常保护且有其他可靠手段使控制器停机。本软件会对内存变量值进行直接读取和修改，炸只因后果自负。
+上功率前请在弱电环境下进行充分测试，不要依赖本程序实现保护停机，要保证控制器自身能实现异常保护且有其他可靠手段使控制器停机。本软件会对内存变量值进行直接读取和修改，炸机后果自负。
 本软件薅了一堆开源库，因此也开源，请定期检查下面网站看是否有bug修复的新版本。</string>
      </property>
      <property name="alignment">
@@ -88,7 +88,7 @@
         <string notr="true">font: bold 24px; padding: 8px;</string>
        </property>
        <property name="text">
-        <string>哔哔赖赖，不看</string>
+        <string>退出</string>
        </property>
       </widget>
      </item>
@@ -104,7 +104,7 @@
         <string notr="true">font: bold 24px; padding: 8px;</string>
        </property>
        <property name="text">
-        <string>资瓷</string>
+        <string>同意</string>
        </property>
       </widget>
      </item>

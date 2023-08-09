@@ -18,6 +18,18 @@
 
 #define TYJ_TO_STR(str) #str
 
+// 继续堆屎，增加LUA 的包间隔设定API
+static int scd_deltaPkgSet_impl(lua_State* L)
+{
+    double deltaPkgX = lua_tonumber(L, 1);
+
+    mainWinPtr->scopeForm1->ui->doubleSpinBox_pkgdelta->setValue(deltaPkgX);
+    mainWinPtr->scopeForm1->deltaPkg = deltaPkgX;
+    mainWinPtr->scopeForm1->ui->label_pkgdelta->setText(QString::number(deltaPkgX));
+
+    return 0;
+}
+
 // 继续堆屎，增加LUA 的绘图方面API
 static int scd_tabItemSelect_impl(lua_State* L)
 {
@@ -616,6 +628,7 @@ LuaScript::LuaScript(MainWindow* mainWin_init, QObject* parent)
     lua_register(lua_sta_init, TYJ_TO_STR(scd_tabItemSelect_impl), scd_tabItemSelect_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_plotItemSelect_impl), scd_plotItemSelect_impl);
     lua_register(lua_sta_init, TYJ_TO_STR(scd_plotCfg), scd_plotCfg);
+    lua_register(lua_sta_init, TYJ_TO_STR(scd_deltaPkgSet_impl), scd_deltaPkgSet_impl);
 
     //传递全局变量
     lua_pushstring(lua_sta_init, "SCD " SCD_VERSION " @ " LUA_VERSION);
