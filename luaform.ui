@@ -246,6 +246,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
+      <widget class="QPushButton" name="srcButton">
+       <property name="text">
+        <string>编辑初始化LUA src</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="loadButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">

@@ -29,6 +29,7 @@ private slots:
     void on_exe_clr_Button_clicked();
     void on_loadButton3_clicked();
     void on_loadButton_clicked();
+    void on_srcButton_clicked();
 };
 
 #endif // LUAFORM_H

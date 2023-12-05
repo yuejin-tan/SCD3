@@ -56,6 +56,7 @@ public:
     QPushButton *loadButton3;
     QPlainTextEdit *plainTextEdit;
     QHBoxLayout *horizontalLayout;
+    QPushButton *srcButton;
     QPushButton *loadButton;
     QSpacerItem *horizontalSpacer;
     QPushButton *clearButton;
@@ -223,6 +224,11 @@ public:
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        srcButton = new QPushButton(luaForm);
+        srcButton->setObjectName(QString::fromUtf8("srcButton"));
+
+        horizontalLayout->addWidget(srcButton);
+
         loadButton = new QPushButton(luaForm);
         loadButton->setObjectName(QString::fromUtf8("loadButton"));
         sizePolicy.setHeightForWidth(loadButton->sizePolicy().hasHeightForWidth());
@@ -287,6 +293,7 @@ public:
         lineEdit3_2->setPlaceholderText(QCoreApplication::translate("luaForm", "int32_t para", nullptr));
         label_9->setText(QCoreApplication::translate("luaForm", ");", nullptr));
         loadButton3->setText(QCoreApplication::translate("luaForm", "\346\217\222\345\205\245", nullptr));
+        srcButton->setText(QCoreApplication::translate("luaForm", "\347\274\226\350\276\221\345\210\235\345\247\213\345\214\226LUA src", nullptr));
         loadButton->setText(QCoreApplication::translate("luaForm", "\350\275\275\345\205\245", nullptr));
         clearButton->setText(QCoreApplication::translate("luaForm", "\346\270\205\351\231\244", nullptr));
         exeButton->setText(QCoreApplication::translate("luaForm", "\346\211\247\350\241\214", nullptr));

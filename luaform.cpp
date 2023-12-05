@@ -7,8 +7,8 @@
 #include "lua5_4/lua.hpp"
 #include "luascript.h"
 
-luaForm::luaForm(QWidget *parent, MainWindow *mainWindow_init) : QWidget(parent),
-                                                                 ui(new Ui::luaForm)
+luaForm::luaForm(QWidget* parent, MainWindow* mainWindow_init) : QWidget(parent),
+ui(new Ui::luaForm)
 {
     ui->setupUi(this);
 
@@ -68,7 +68,7 @@ void luaForm::on_loadButton_clicked()
 
     QString saveDir = mainWin1->luaScript1->getSaveDir();
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                    "打开LUA脚本", saveDir, "lua scripts (*.lua *.txt)");
+        "打开LUA脚本", saveDir, "lua scripts (*.lua *.txt)");
     if (fileName == "")
     {
         // 未选择
@@ -77,17 +77,17 @@ void luaForm::on_loadButton_clicked()
     }
 
     size_t fileLength = 0;
-    char *fileBuffer = nullptr;
+    char* fileBuffer = nullptr;
 
     {
         QByteArray fileName2 = fileName.toLocal8Bit();
-        FILE *fileHandle = fopen(fileName2.data(), "rb");
+        FILE* fileHandle = fopen(fileName2.data(), "rb");
 
         if (fileHandle)
         {
             fseek(fileHandle, 0, SEEK_END);
             fileLength = ftell(fileHandle);
-            fileBuffer = (char *)malloc((fileLength + 1) * sizeof(char));
+            fileBuffer = (char*)malloc((fileLength + 1) * sizeof(char));
             rewind(fileHandle);
             fileLength = fread(fileBuffer, 1, fileLength, fileHandle);
             fileBuffer[fileLength] = '\0';
@@ -106,3 +106,14 @@ void luaForm::on_loadButton_clicked()
         free(fileBuffer);
     }
 }
+
+void luaForm::on_srcButton_clicked()
+{
+    //打开资源管理器并高亮文件
+    const QString explorer = "explorer";
+    QStringList param;
+    param << QLatin1String("/select,");
+    param << QDir::toNativeSeparators("./scd_cfg_win64.lua");
+    QProcess::startDetached(explorer, param);
+}
+
