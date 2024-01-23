@@ -29,13 +29,39 @@ static uint8_t buffer[4] = { 0xaa, 0xaa, 0xaa, 0xaa };
 // 针对小端8bit机器
 void MainWindow::fpsTimerOut()
 {
+    static int noDataCnt = 0;
+    const int noDataCntMax = 10;
     if (isSciOn)
     {
+        // 新增mcu串口无数据重置逻辑
+        if (tyj_serial->bytesAvailable() < 4)
+        {
+            noDataCnt++;
+            if (noDataCnt > noDataCntMax)
+            {
+                noDataCnt = 0;
+                isFrameAligned = -1;
+
+                errFrameCnt++;
+                floatCntLast = floatCnt;
+                frameAlignedCnt = 0;
+                valTemp->clear();
+                floatCnt = 0;
+            }
+        }
+        else
+        {
+            noDataCnt = 0;
+            if (isFrameAligned == -1)
+            {
+                isFrameAligned = 0;
+            }
+        }
         // 需保证串口开启
         if (isFrameAligned == 2)
         {
             // 处于帧对齐状态
-            while (tyj_serial->bytesAvailable() > 4)
+            while (tyj_serial->bytesAvailable() >= 4)
             {
                 tyj_serial->read((char*)(void*)buffer, 4);
                 float* tmpFloat = (float*)(void*)buffer;
@@ -86,6 +112,10 @@ void MainWindow::fpsTimerOut()
                             uint16_t* gTmpU16 = (uint16_t*)(void*)buffer;
                             printf("protocol all vars sum check err:rev sum=%d;calc sum=%d @ pkg: %d\n", *gTmpU16, sum, okFrameCnt);
                             errFrameCnt++;
+                            ui->statusBar->showMessage(QStringLiteral("全局帧校验出错！"), 1000);
+                            valTemp->clear();
+                            floatCnt = 0;
+                            continue;
                         }
                         if (names->size() > 0)
                         {
@@ -149,6 +179,10 @@ void MainWindow::fpsTimerOut()
                             uint16_t* gTmpU16 = (uint16_t*)(void*)buffer;
                             printf("protocol DUMP sum check err:rev sum=%d;calc sum=%d @ pkg: %d\nplottings may have err data\n", *gTmpU16, sum, okFrameCnt);
                             errFrameCnt++;
+                            ui->statusBar->showMessage(QStringLiteral("dump帧校验出错！"), 1000);
+                            valTemp->clear();
+                            floatCnt = 0;
+                            continue;
                         }
                         float dumpPkgLastFloat = valTemp->takeLast();
                         if (dumpPkgLastFloat < 0.5f)
@@ -226,7 +260,7 @@ void MainWindow::fpsTimerOut()
                         errFrameCnt++;
                         valTemp->clear();
                         floatCnt = 0;
-                        return;
+                        break;
                     }
                     valTemp->clear();
                     floatCnt = 0;
@@ -257,10 +291,10 @@ void MainWindow::fpsTimerOut()
                 }
             }
         }
-        else if (isFrameAligned == 1)
+        if (isFrameAligned == 1)
         {
             // 没有帧对齐，即使弃包也先找对齐点,小端模式下，以0x00,0x00,0x80,0x7f为唯一对齐帧
-            while (tyj_serial->bytesAvailable() >= 1)
+            while (tyj_serial->bytesAvailable() > 0)
             {
                 tyj_serial->getChar((char*)(void*)&buffer[3]);
                 frameAlignedCnt++;
@@ -290,10 +324,10 @@ void MainWindow::fpsTimerOut()
                 }
             }
         }
-        else if (isFrameAligned == 0)
+        if (isFrameAligned == 0)
         {
             // 没有帧对齐，即使弃包也先找对齐点,小端模式下，以0x00,0x00,0x80,0x7f为唯一对齐帧
-            while (tyj_serial->bytesAvailable() >= 1)
+            while (tyj_serial->bytesAvailable() > 0)
             {
                 tyj_serial->getChar((char*)(void*)&buffer[3]);
                 if (memcmp(end_array, buffer, 4) == 0)
@@ -312,13 +346,18 @@ void MainWindow::fpsTimerOut()
             }
         }
         // 串口打开时对状态显示进行更新
-        staBarRefresh(isFrameAligned == 2);
+        staBarRefresh(isFrameAligned);
     }
     else
     {
         // 关闭后需重新对齐
+        // qDebug() << "xxx3" << endl;
+        errFrameCnt++;
+        floatCntLast = floatCnt;
         isFrameAligned = 0;
         frameAlignedCnt = 0;
-        // qDebug() << "xxx3" << endl;
+        valTemp->clear();
+        floatCnt = 0;
+        noDataCnt = 0;
     }
 }

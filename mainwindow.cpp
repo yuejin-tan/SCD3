@@ -90,7 +90,7 @@ ui(new Ui::MainWindow)
     connect(this, &MainWindow::tableRefreshSig, this, &MainWindow::tableRefreshSlot);
 
     // 使能串口数据处理函数
-    mainMilliSec = 80;
+    mainMilliSec = 50;
     timer1->start(mainMilliSec);
 
     // 状态栏显示初始信息

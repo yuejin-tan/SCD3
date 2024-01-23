@@ -5,9 +5,9 @@
 
 #include "QDebug"
 
-void MainWindow::staBarRefresh(bool frameLocked)
+void MainWindow::staBarRefresh(int frameLocked)
 {
-    const int speedRefreshDms = 2000;
+    const int speedRefreshDms = 1000;
     static int nowCnt = speedRefreshDms / 2;
     static clock_t startT = 0;
 

@@ -83,7 +83,7 @@ public:
 
     void closeEvent(QCloseEvent* event);
 
-    void staBarRefresh(bool frameLocked);
+    void staBarRefresh(int frameLocked);
 
     Ui::MainWindow* ui;
     // 串口类
