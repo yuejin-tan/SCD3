@@ -42,7 +42,8 @@ void MainWindow::fpsTimerOut()
                 noDataCnt = 0;
                 isFrameAligned = -1;
 
-                errFrameCnt++;
+                // 此时不应计入误包数
+                // errFrameCnt++;
                 floatCntLast = floatCnt;
                 frameAlignedCnt = 0;
                 valTemp->clear();
@@ -352,7 +353,8 @@ void MainWindow::fpsTimerOut()
     {
         // 关闭后需重新对齐
         // qDebug() << "xxx3" << endl;
-        errFrameCnt++;
+        // 此时也不应计入误包数
+        // errFrameCnt++;
         floatCntLast = floatCnt;
         isFrameAligned = 0;
         frameAlignedCnt = 0;
